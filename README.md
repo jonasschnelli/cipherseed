@@ -1,30 +1,27 @@
-[![Build Status](https://travis-ci.org/jonasschnelli/chacha20poly1305.svg?branch=master)](https://travis-ci.org/jonasschnelli/chacha20poly1305) 
+[![Build Status](https://travis-ci.org/jonasschnelli/cipherseed.svg?branch=master)](https://travis-ci.org/jonasschnelli/cipherseed) 
 
-chacha20/poly1305/chacha20poly1305 openssh aead
+cipherseed
 =====
 
-Simple C module for chacha20, poly1305 and chacha20poly1305@openssh AEAD
+Cipherseed is a scheme to encrypt 128 or 256bit entropy plus metadata with chacha20 and add two poly1305 MAC tags to allow a pratical form of plausible deniability
 
-Features:
-* Simple, pure C code without any dependencies.
 
-Performance
------------
+128bit/256bit entropy
+----------------
+* 1 byte header unencrypted
+* 5 byte unencrypted pbkdf2-salt
+* 3 byte header encrypted (1 byte type, 2 byte birthday)
+* 16/32 byte encrypted entropy
+* 4 byte primary MAC tag (tag covers salt || encrypted header || encrypted entropy)
+* 4 byte secondary MAC tag (tag covers salt || encrypted header || encrypted entropy)
+* = Total 33/49 bytes
+* 33 bytes == 264 bits == 24 word mnemonic == 53 base32 chars (without checksum/hrp)
+* 49 bytes == 392 bits == 36 word mnemonic == 79 base32 chars (without checksum/hrp)
 
--
 
-Build steps
------------
-
-Object code:
-
-    $ gcc -O3 -c poly1305.c chacha.c chachapoly_aead.c
-
-Tests:
-
-    $ gcc -O3 poly1305.c chacha.c chachapoly_aead.c tests.c -o test
-
-Benchmark:
-
-    $ gcc -O3 poly1305.c chacha.c chachapoly_aead.c bench.c -o bench
-    
+Compile / Test
+=====
+```
+gcc -O0 -g sha2.c chacha.c poly1305.c cipherseed.c tests.c -o test
+./test
+```

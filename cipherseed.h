@@ -1,0 +1,48 @@
+/*
+
+ The MIT License (MIT)
+
+ Copyright (c) 2018 Jonas Schnelli
+
+ Permission is hereby granted, free of charge, to any person obtaining
+ a copy of this software and associated documentation files (the "Software"),
+ to deal in the Software without restriction, including without limitation
+ the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ and/or sell copies of the Software, and to permit persons to whom the
+ Software is furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included
+ in all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+ OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ OTHER DEALINGS IN THE SOFTWARE.
+
+*/
+
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+
+// the used PBKDF2 salt is 'btcseed'+random-5byte-salt (12 bytes total)
+static uint8_t PBKDF2_SALTPREFIX[7] = {'b', 't', 'c', 's', 'e', 'e', 'd'};
+#define PBKDF2_SALTLEN 5
+#define PBKDF2_ROUNDS 20480
+#define PBKDF2_HMACLEN 64
+
+void pbkdf2_hmac_sha512(const uint8_t *pass, int passlen,
+                        const uint8_t salt_in[PBKDF2_SALTLEN], uint8_t *key,
+                        int keylen);
+
+int encrypt_seed(const uint8_t key256[32], const uint8_t key256_sec[32],
+                 const uint8_t *seed, unsigned int seedlen,
+                 const uint8_t *salt_5bytes, const uint16_t bday_15bit,
+                 const uint8_t type, uint8_t *dest, int is_encrypt);
+
+int decrypt_seed(const uint8_t key256[32], const uint8_t *payload,
+                 unsigned int payload_len, uint16_t *bday_15bit_out,
+                 uint8_t *type_out, uint8_t *seed_out);
